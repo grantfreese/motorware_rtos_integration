@@ -1,0 +1,15 @@
+/.metadata
+/RemoteSystemsTempFiles
+/dvt
+Debug
+Release
+*.log
+*.lock
+.history
+*.snap
+.launches
+.xdchelp
+.config
+makefile.defs
+.settings
+src/makefile.libs
