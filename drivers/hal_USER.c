@@ -1303,7 +1303,7 @@ void HAL_setupPll(HAL_Handle handle, const PLL_ClkFreq_e clkFreq)
 	return;
 } // end of HAL_setupPll() function
 
-void HAL_setupPwms(HAL_Handle handle, const uint_least16_t systemFreq_MHz, const float_t pwmPeriod_usec,
+void HAL_setupPwms(HAL_Handle handle, const float_t systemFreq_MHz, const float_t pwmPeriod_usec,
 		const uint_least16_t numPwmTicksPerIsrTick)
 {
 	HAL_Obj *obj = (HAL_Obj *) handle;
@@ -1564,7 +1564,7 @@ void HAL_setupPwmDacs(HAL_Handle handle)
 	return;
 }  // end of HAL_setupPwmDacs() function
 
-void HAL_setupTimers(HAL_Handle handle, const uint_least16_t systemFreq_MHz)
+void HAL_setupTimers(HAL_Handle handle, const float_t systemFreq_MHz)
 {
 	HAL_Obj *obj = (HAL_Obj *) handle;
 	uint32_t timerPeriod_cnts = ((uint32_t) systemFreq_MHz * 1000000) - 1;
