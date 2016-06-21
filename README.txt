@@ -1,6 +1,9 @@
 Important note:
 	This code is provided as-is. Stability is not guaranteed, nor likely.
 
+License
+	This code is licensed under the same BSD license that applies to TI's original Motorware code.
+
 Current tool versions:
 	CCS 6.1.2.00015
 	TI Compiler 6.4.10
