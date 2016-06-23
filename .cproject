@@ -41,7 +41,7 @@
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.VCU_SUPPORT.1141139778" name="Specify VCU support (--vcu_support)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.VCU_SUPPORT" value="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.VCU_SUPPORT.vcu0" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.INCLUDE_PATH.1271153474" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}/inc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MW_INSTALL_DIR}/sw/modules/hal/boards/boostxldrv8301_revB/f28x/f2806x/src/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}/drivers_user/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${MW_INSTALL_DIR}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${CG_TOOL_ROOT}/include&quot;"/>
 								</option>
