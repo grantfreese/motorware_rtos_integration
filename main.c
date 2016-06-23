@@ -101,23 +101,18 @@ void main(void)
 	// setup faults
 	HAL_setupFaults(halHandle);
 
-	// initialize the interrupt vector table
-	//HAL_initIntVectorTable(halHandle);	//handled in TI-RTOS
-
 	// enable the ADC interrupts
 	HAL_enableAdcInts(halHandle);
 
 	// enable global interrupts
 	HAL_enableGlobalInts(halHandle);
 
-	// enable debug interrupts
-	//HAL_enableDebugInt(halHandle);		//handled in TI-RTOS
-
 	// disable the PWM
 	HAL_disablePwm(halHandle);
 
 	// turn on the DRV8301 if present
 	HAL_enableDrv(halHandle);
+
 	// initialize the DRV8301 interface
 	HAL_setupDrvSpi(halHandle, &gDrvSpi8301Vars);
 
@@ -196,9 +191,7 @@ void task_motorware()
 		// loop while the enable system flag is true
 		while (gMotorVars.Flag_enableSys)
 		{
-			HAL_toggleLed(halHandle, GPIO_Number_39);	//TODO: temporary
-			Task_yield();
-			HAL_toggleLed(halHandle, GPIO_Number_39);	//TODO: temporary
+			Task_yield();	//TODO: change this so that an outside timer activates the motorware task when needed
 
 			CTRL_Obj *obj = (CTRL_Obj *) ctrlHandle;
 
@@ -243,20 +236,14 @@ void task_motorware()
 						HAL_updateAdcBias(halHandle);
 
 						// Return the bias value for currents
-						gMotorVars.I_bias.value[0] = HAL_getBias(halHandle,
-								HAL_SensorType_Current, 0);
-						gMotorVars.I_bias.value[1] = HAL_getBias(halHandle,
-								HAL_SensorType_Current, 1);
-						gMotorVars.I_bias.value[2] = HAL_getBias(halHandle,
-								HAL_SensorType_Current, 2);
+						gMotorVars.I_bias.value[0] = HAL_getBias(halHandle, HAL_SensorType_Current, 0);
+						gMotorVars.I_bias.value[1] = HAL_getBias(halHandle, HAL_SensorType_Current, 1);
+						gMotorVars.I_bias.value[2] = HAL_getBias(halHandle, HAL_SensorType_Current, 2);
 
 						// Return the bias value for voltages
-						gMotorVars.V_bias.value[0] = HAL_getBias(halHandle,
-								HAL_SensorType_Voltage, 0);
-						gMotorVars.V_bias.value[1] = HAL_getBias(halHandle,
-								HAL_SensorType_Voltage, 1);
-						gMotorVars.V_bias.value[2] = HAL_getBias(halHandle,
-								HAL_SensorType_Voltage, 2);
+						gMotorVars.V_bias.value[0] = HAL_getBias(halHandle, HAL_SensorType_Voltage, 0);
+						gMotorVars.V_bias.value[1] = HAL_getBias(halHandle, HAL_SensorType_Voltage, 1);
+						gMotorVars.V_bias.value[2] = HAL_getBias(halHandle, HAL_SensorType_Voltage, 2);
 
 						// enable the PWM
 						HAL_enablePwm(halHandle);
@@ -289,9 +276,7 @@ void task_motorware()
 				CTRL_setSpd_ref_krpm(ctrlHandle, gMotorVars.SpeedRef_krpm);
 
 				// set the speed acceleration
-				CTRL_setMaxAccel_pu(ctrlHandle,
-						_IQmpy(MAX_ACCEL_KRPMPS_SF,
-								gMotorVars.MaxAccel_krpmps));
+				CTRL_setMaxAccel_pu(ctrlHandle, _IQmpy(MAX_ACCEL_KRPMPS_SF, gMotorVars.MaxAccel_krpmps));
 
 				if (Flag_Latch_softwareUpdate)
 				{
@@ -320,12 +305,10 @@ void task_motorware()
 			}
 
 			// enable/disable the forced angle
-			EST_setFlag_enableForceAngle(obj->estHandle,
-					gMotorVars.Flag_enableForceAngle);
+			EST_setFlag_enableForceAngle(obj->estHandle, gMotorVars.Flag_enableForceAngle);
 
 			// enable or disable power warp
-			CTRL_setFlag_enablePowerWarp(ctrlHandle,
-					gMotorVars.Flag_enablePowerWarp);
+			CTRL_setFlag_enablePowerWarp(ctrlHandle, gMotorVars.Flag_enablePowerWarp);
 
 #ifdef DRV8301_SPI
 			HAL_writeDrvData(halHandle, &gDrvSpi8301Vars);
@@ -359,12 +342,10 @@ void updateGlobalVariables_motor(CTRL_Handle handle)
 	gMotorVars.Speed_krpm = EST_getSpeed_krpm(obj->estHandle);
 
 	// get the real time speed reference coming out of the speed trajectory generator
-	gMotorVars.SpeedTraj_krpm = _IQmpy(CTRL_getSpd_int_ref_pu(handle),
-			EST_get_pu_to_krpm_sf(obj->estHandle));
+	gMotorVars.SpeedTraj_krpm = _IQmpy(CTRL_getSpd_int_ref_pu(handle), EST_get_pu_to_krpm_sf(obj->estHandle));
 
 	// get the torque estimate
-	gMotorVars.Torque_Nm = USER_computeTorque_Nm(handle,
-			gTorque_Flux_Iq_pu_to_Nm_sf, gTorque_Ls_Id_Iq_pu_to_Nm_sf);
+	gMotorVars.Torque_Nm = USER_computeTorque_Nm(handle, gTorque_Flux_Iq_pu_to_Nm_sf, gTorque_Ls_Id_Iq_pu_to_Nm_sf);
 
 	// get the magnetizing current
 	gMotorVars.MagnCurr_A = EST_getIdRated(obj->estHandle);
@@ -394,8 +375,7 @@ void updateGlobalVariables_motor(CTRL_Handle handle)
 	gMotorVars.EstState = EST_getState(obj->estHandle);
 
 	// Get the DC buss voltage
-	gMotorVars.VdcBus_kV = _IQmpy(gAdcData.dcBus,
-			_IQ(USER_IQ_FULL_SCALE_VOLTAGE_V/1000.0));
+	gMotorVars.VdcBus_kV = _IQmpy(gAdcData.dcBus, _IQ(USER_IQ_FULL_SCALE_VOLTAGE_V/1000.0));
 
 	return;
 } // end of updateGlobalVariables_motor() function

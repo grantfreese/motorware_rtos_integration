@@ -465,15 +465,11 @@ void HAL_enableAdcInts(HAL_Handle handle)
 {
 	HAL_Obj *obj = (HAL_Obj *) handle;
 
-	//TODO: disabled
-	// // enable the PIE interrupts associated with the ADC interrupts
-	// PIE_enableAdcInt(obj->pieHandle, ADC_IntNumber_1);
-
 	// enable the ADC interrupts
 	ADC_enableInt(obj->adcHandle, ADC_IntNumber_1);
 
-	//TODO: disabled
-	//	// enable the cpu interrupt for ADC interrupts
+	//TODO: figure out why TI-RTOS doesn't enable the CPU interrupt for this
+	// enable the cpu interrupt for ADC interrupts
 	CPU_enableInt(obj->cpuHandle, CPU_IntNumber_10);
 
 	return;
@@ -620,10 +616,6 @@ HAL_Handle HAL_init(void *pMemory, const size_t numBytes)
 	// initialize the oscillator handle
 	obj->oscHandle = OSC_init((void *) OSC_BASE_ADDR, sizeof(OSC_Obj));
 
-//TODO: disabled
-//	// initialize the PIE handle
-//	obj->pieHandle = PIE_init((void *) PIE_BASE_ADDR, sizeof(PIE_Obj));
-
 	// initialize the PLL handle
 	obj->pllHandle = PLL_init((void *) PLL_BASE_ADDR, sizeof(PLL_Obj));
 
@@ -649,7 +641,7 @@ HAL_Handle HAL_init(void *pMemory, const size_t numBytes)
 	// initialize power handle
 	obj->pwrHandle = PWR_init((void *) PWR_BASE_ADDR, sizeof(PWR_Obj));
 
-//TODO: diabled
+//TODO: diabled - timer0/1 are needed by TI-RTOS, but timer2 is available if needed
 //	// initialize timer handles
 //	obj->timerHandle[0] = TIMER_init((void *) TIMER0_BASE_ADDR, sizeof(TIMER_Obj));
 //	obj->timerHandle[1] = TIMER_init((void *) TIMER1_BASE_ADDR, sizeof(TIMER_Obj));
@@ -704,10 +696,6 @@ void HAL_setParams(HAL_Handle handle, const USER_Params *pUserParams)
 
 	// Setup the PLL
 	HAL_setupPll(handle, PLL_ClkFreq_90_MHz);
-
-//TODO: disabled
-//	// setup the PIE
-//	HAL_setupPie(handle);
 
 	// run the device calibration
 	HAL_cal(handle);
