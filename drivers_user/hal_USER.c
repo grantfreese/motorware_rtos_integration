@@ -641,11 +641,11 @@ HAL_Handle HAL_init(void *pMemory, const size_t numBytes)
 	// initialize power handle
 	obj->pwrHandle = PWR_init((void *) PWR_BASE_ADDR, sizeof(PWR_Obj));
 
-//TODO: diabled - timer0/1 are needed by TI-RTOS, but timer2 is available if needed
-//	// initialize timer handles
-//	obj->timerHandle[0] = TIMER_init((void *) TIMER0_BASE_ADDR, sizeof(TIMER_Obj));
-//	obj->timerHandle[1] = TIMER_init((void *) TIMER1_BASE_ADDR, sizeof(TIMER_Obj));
-//	obj->timerHandle[2] = TIMER_init((void *) TIMER2_BASE_ADDR, sizeof(TIMER_Obj));
+//TODO: diabled - timer0 is needed by TI-RTOS, but timer1/2 is available if needed
+	// initialize timer handles
+	//obj->timerHandle[0] = TIMER_init((void *) TIMER0_BASE_ADDR, sizeof(TIMER_Obj));
+	obj->timerHandle[1] = TIMER_init((void *) TIMER1_BASE_ADDR, sizeof(TIMER_Obj));
+	obj->timerHandle[2] = TIMER_init((void *) TIMER2_BASE_ADDR, sizeof(TIMER_Obj));
 
 	// initialize drv8301 interface
 	obj->drv8301Handle = DRV8301_init(&obj->drv8301, sizeof(obj->drv8301));
@@ -731,9 +731,8 @@ void HAL_setParams(HAL_Handle handle, const USER_Params *pUserParams)
 	// setup the PWM DACs
 	HAL_setupPwmDacs(handle);
 
-//TODO: disabled
-//	// setup the timers
-//	HAL_setupTimers(handle, pUserParams->systemFreq_MHz);
+	// setup the timers
+	HAL_setupTimers(handle, pUserParams->systemFreq_MHz);
 
 	// setup the drv8301 interface
 	HAL_setupGate(handle);
@@ -1179,26 +1178,6 @@ void HAL_setupGpios(HAL_Handle handle)
 	return;
 }  // end of HAL_setupGpios() function
 
-//TODO: disabled
-//void HAL_setupPie(HAL_Handle handle)
-//{
-//  HAL_Obj *obj = (HAL_Obj *)handle;
-//
-//
-//  PIE_disable(obj->pieHandle);
-//
-//  PIE_disableAllInts(obj->pieHandle);
-//
-//  PIE_clearAllInts(obj->pieHandle);
-//
-//  PIE_clearAllFlags(obj->pieHandle);
-//
-//  PIE_setDefaultIntVectorTable(obj->pieHandle);
-//
-//  PIE_enable(obj->pieHandle);
-//
-//  return;
-//} // end of HAL_setupPie() function
 
 void HAL_setupPeripheralClks(HAL_Handle handle)
 {
@@ -1557,20 +1536,13 @@ void HAL_setupTimers(HAL_Handle handle, const float_t systemFreq_MHz)
 	HAL_Obj *obj = (HAL_Obj *) handle;
 	uint32_t timerPeriod_cnts = ((uint32_t) systemFreq_MHz * 1000000) - 1;
 
-	// timer0
-	TIMER_setDecimationFactor(obj->timerHandle[0], 0);
-	TIMER_setEmulationMode(obj->timerHandle[0], TIMER_EmulationMode_RunFree);
-	TIMER_setPeriod(obj->timerHandle[0], timerPeriod_cnts);
-	TIMER_setPreScaler(obj->timerHandle[0], 0);
+	// timer0 - reserved and configured by TI-RTOS
 
-//TODO: disabled, timer1 used by TI-RTOS
-//	// use timer 1 for CPU usage diagnostics
-//	TIMER_setDecimationFactor(obj->timerHandle[1], 0);
-//	TIMER_setEmulationMode(obj->timerHandle[1], TIMER_EmulationMode_RunFree);
-//	TIMER_setPeriod(obj->timerHandle[1], timerPeriod_cnts);
-//	TIMER_setPreScaler(obj->timerHandle[1], 0);
-
-	return;
+	// timer1
+	TIMER_setDecimationFactor(obj->timerHandle[1], 0);
+	TIMER_setEmulationMode(obj->timerHandle[1], TIMER_EmulationMode_RunFree);
+	TIMER_setPeriod(obj->timerHandle[1], timerPeriod_cnts);
+	TIMER_setPreScaler(obj->timerHandle[1], 0);
 }  // end of HAL_setupTimers() function
 
 void HAL_writeDrvData(HAL_Handle handle, DRV_SPI_8301_Vars_t *Spi_8301_Vars)

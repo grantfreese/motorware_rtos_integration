@@ -983,11 +983,6 @@ extern void HAL_setupGpios(HAL_Handle handle);
 extern void HAL_setupPeripheralClks(HAL_Handle handle);
 
 
-//! \brief     Sets up the PIE (Peripheral Interrupt Expansion)
-//! \param[in] handle  The hardware abstraction layer (HAL) handle
-extern void HAL_setupPie(HAL_Handle handle);
-
-
 //! \brief     Sets up the PLL (Phase Lock Loop)
 //! \param[in] handle   The hardware abstraction layer (HAL) handle
 //! \param[in] clkFreq  The clock frequency

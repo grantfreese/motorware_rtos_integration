@@ -30,13 +30,13 @@ extern uint16_t RamfuncsLoadEnd;
 extern uint16_t RamfuncsRunStart;
 extern uint16_t RamfuncsLoadSize;
 
+//TODO: Move important params to separate global.c file, and try to remove others if possible
 uint_least16_t gCounter_updateGlobals = 0;
 bool Flag_Latch_softwareUpdate = true;
 CTRL_Handle ctrlHandle;
 HAL_Handle halHandle;
 USER_Params gUserParams;
-HAL_PwmData_t gPwmData =
-{ _IQ(0.0), _IQ(0.0), _IQ(0.0) };
+HAL_PwmData_t gPwmData = { _IQ(0.0), _IQ(0.0), _IQ(0.0) };
 HAL_AdcData_t gAdcData;
 _iq gMaxCurrentSlope = _IQ(0.0);
 CTRL_Obj *controller_obj;
@@ -48,16 +48,15 @@ _iq gFlux_pu_to_VpHz_sf;
 _iq gTorque_Ls_Id_Iq_pu_to_Nm_sf;
 _iq gTorque_Flux_Iq_pu_to_Nm_sf;
 
-//---------------------------------------------------------------------------
-// main()
-//---------------------------------------------------------------------------
+/****************************************************************************
+ * main
+ ***************************************************************************/
 void main(void)
 {
 	uint_least8_t estNumber = 0;
 	uint_least8_t ctrlNumber = 0;
 
-	memcpy(&RamfuncsRunStart, &RamfuncsLoadStart,
-			(unsigned long) &RamfuncsLoadSize);	// Copy InitFlash fxn to RAM and run it
+	memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (unsigned long) &RamfuncsLoadSize);	// Copy InitFlash fxn to RAM and run it
 
 	// initialize the hardware abstraction layer
 	halHandle = HAL_init(&hal, sizeof(hal));
@@ -88,10 +87,7 @@ void main(void)
 
 	{
 		CTRL_Version version;
-
-		// get the version number
-		CTRL_getVersion(ctrlHandle, &version);
-
+		CTRL_getVersion(ctrlHandle, &version);	// get the version number
 		gMotorVars.CtrlVersion = version;
 	}
 
@@ -125,14 +121,12 @@ void main(void)
 	gTorque_Ls_Id_Iq_pu_to_Nm_sf = USER_computeTorque_Ls_Id_Iq_pu_to_Nm_sf();
 	gTorque_Flux_Iq_pu_to_Nm_sf = USER_computeTorque_Flux_Iq_pu_to_Nm_sf();
 
-	BIOS_start();							// Start BIOS Scheduler
+	BIOS_start();	// Start BIOS Scheduler
 }
 
-//---------------------------------------------------------------------------
-// ledToggle() ISR - called by BIOS Hwi (see app.cfg)
-//
-// Toggle LED via GPIO pin (LD2 on 28069 Control Stick)
-//---------------------------------------------------------------------------
+/****************************************************************************
+ * Test task
+ ***************************************************************************/
 void task_led_toggle(void)
 {
 	while (1)
@@ -262,7 +256,6 @@ void task_motorware()
 						// call this function to fix 1p6
 						USER_softwareUpdate1p6(ctrlHandle);
 					}
-
 				}
 			}
 
