@@ -451,15 +451,6 @@ void HAL_disableWdog(HAL_Handle halHandle)
 	return;
 } // end of HAL_disableWdog() function
 
-void HAL_disableGlobalInts(HAL_Handle handle)
-{
-	HAL_Obj *obj = (HAL_Obj *) handle;
-
-	CPU_disableGlobalInts(obj->cpuHandle);
-
-	return;
-} // end of HAL_disableGlobalInts() function
-
 
 void HAL_enableAdcInts(HAL_Handle handle)
 {
