@@ -327,9 +327,31 @@ void task_motorware()
 /****************************************************************************
  * update global variables
  ***************************************************************************/
+
+ 
+// define a macro to fix the return value.  A union would likely be cleaner but this is the TI recommended method.
+#ifdef __TMS320C28XX_FPU32__
+#warning: FP: assigning temp to instaspin->real world.
+#define fpu_assign(x,y) 	tmp =y;						\
+							x = *((float_t *) &tmp)
+#else
+#warning: Fixed pt: direct assigning instaspin->real world.
+#define		fpu_assign(x,y)   x =y
+
+#endif
+
+ 
+ 
 void updateGlobalVariables_motor(CTRL_Handle handle)
 {
 	CTRL_Obj *obj = (CTRL_Obj *) handle;
+
+
+#ifdef __TMS320C28XX_FPU32__
+  int32_t tmp;
+#endif
+
+
 
 	// get the speed estimate
 	gMotorVars.Speed_krpm = EST_getSpeed_krpm(obj->estHandle);
@@ -341,22 +363,24 @@ void updateGlobalVariables_motor(CTRL_Handle handle)
 	gMotorVars.Torque_Nm = USER_computeTorque_Nm(handle, gTorque_Flux_Iq_pu_to_Nm_sf, gTorque_Ls_Id_Iq_pu_to_Nm_sf);
 
 	// get the magnetizing current
-	gMotorVars.MagnCurr_A = EST_getIdRated(obj->estHandle);
+   fpu_assign(gMotorVars.MagnCurr_A ,EST_getIdRated( obj->estHandle ));
 
 	// get the rotor resistance
-	gMotorVars.Rr_Ohm = EST_getRr_Ohm(obj->estHandle);
+   fpu_assign(gMotorVars.Rr_Ohm, EST_getRr_Ohm( obj->estHandle ));
 
 	// get the stator resistance
-	gMotorVars.Rs_Ohm = EST_getRs_Ohm(obj->estHandle);
+   fpu_assign(gMotorVars.Rs_Ohm	  , EST_getRs_Ohm( obj->estHandle ));
 
 	// get the stator inductance in the direct coordinate direction
-	gMotorVars.Lsd_H = EST_getLs_d_H(obj->estHandle);
+   fpu_assign(gMotorVars.Lsd_H,   EST_getLs_d_H( obj->estHandle ));
 
 	// get the stator inductance in the quadrature coordinate direction
-	gMotorVars.Lsq_H = EST_getLs_q_H(obj->estHandle);
+   fpu_assign(gMotorVars.Lsq_H	  , EST_getLs_q_H( obj->estHandle ));
 
 	// get the flux in V/Hz in floating point
-	gMotorVars.Flux_VpHz = EST_getFlux_VpHz(obj->estHandle);
+   fpu_assign(gMotorVars.Flux_VpHz , EST_getFlux_VpHz( obj->estHandle ));
+
+
 
 	// get the flux in Wb in fixed point
 	gMotorVars.Flux_Wb = USER_computeFlux(handle, gFlux_pu_to_Wb_sf);
