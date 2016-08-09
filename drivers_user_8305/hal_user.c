@@ -34,7 +34,11 @@
 //! \brief Contains the various functions related to the HAL object (everything outside the CTRL system) 
 //!
 //! (C) Copyright 2011, Texas Instruments, Inc.
-
+// 
+// Modifications from TI HAL code: 
+// for RTOS build, 
+// timers and interrupts ( PIE) are not initialized 
+// for use with non rtos builds, timers may need initialization options to be enabled. 
 // **************************************************************************
 // the includes
 // drivers
@@ -44,12 +48,43 @@
 #include "inc/hal.h"
 #include "inc/hal_obj.h"
 
+
+
+// **************************************************************************
+// the defines
 #ifndef NO_RTOS
 #error: NO_RTOS should be defined as 0 for RTOS use or nonzero for use without an RTOS. Define in Project->C/C++ general->Paths and Symbols -> Symbols.
 
 #endif
 
 
+
+
+#define EnableTimer_0 0 // if nonzero, timer 0 is initialized by HAL. 
+#define EnableTimer_1 0 // if nonzero, timer 1 is initialized by HAL. 
+#define EnableTimer_2 0 // if nonzero, timer 2 is initialized by HAL. .
+
+
+#define EnableTimers (EnableTimer_0 || EnableTimer_1 || EnableTimer_2) // if nonzero, timers are initialized for RTOS.
+
+#define Init_HAL_Timer_Handle 1	// if nonzero, handles are assigned for timers weather or not timers are initialized. 
+#define HAL_USER_DEBUG 0		// if nonzero, module emits warnings to indicate various compile time options and information. 
+
+
+#if HAL_USER_DEBUG
+#warning: HAL_USER.c printing compile debug messages. 
+
+#if Init_HAL_Timer_Handle
+#warning: Initializing all HAL timer handles.
+#else
+#warning: 										NOT Initializing all HAL timer handles.
+#endif
+
+#if EnableTimers
+#warning: HAL_user.c configures timers
+#else
+#warning: HAL_user.c				EnableTimers is 0.  
+#endif
 
 #ifdef FLASH
 #pragma CODE_SECTION(HAL_setupFlash,"ramfuncs");
@@ -58,8 +93,8 @@
 #warning: HAL_user.c (8305) ****************************   NOT copying HAL_setupFlash to RAM.
 #endif
 
-// **************************************************************************
-// the defines
+#endif			// HAL_USER_DEBUG > 0
+
 
 // **************************************************************************
 // the globals
@@ -679,7 +714,10 @@ HAL_Handle HAL_init(void *pMemory,const size_t numBytes)
   obj->pwrHandle = PWR_init((void *)PWR_BASE_ADDR,sizeof(PWR_Obj));
 
   // initialize timer handles
-#if NO_RTOS
+#if NO_RTOS || Init_HAL_Timer_Handle
+#if HAL_USER_DEBUG
+#warning: HAL initializing timer 0 base.
+#endif
   obj->timerHandle[0] = TIMER_init((void *)TIMER0_BASE_ADDR,sizeof(TIMER_Obj));
 #endif
   obj->timerHandle[1] = TIMER_init((void *)TIMER1_BASE_ADDR,sizeof(TIMER_Obj));
@@ -776,8 +814,9 @@ void HAL_setParams(HAL_Handle handle,const USER_Params *pUserParams)
   HAL_setupPwmDacs(handle);
 
   // setup the timers
+#if NO_RTOS || EnableTimers
   HAL_setupTimers(handle,(float_t)pUserParams->systemFreq_MHz);
-
+#endif
 
   // setup the drv8305 interface
   HAL_setupGate(handle);
@@ -858,7 +897,9 @@ void HAL_setupAdcs(HAL_Handle handle)
   ADC_setIntSrc(obj->adcHandle,ADC_IntNumber_1,ADC_IntSrc_EOC7);
 
 #ifdef J5
+#if HAL_USER_DEBUG
 #warning J5 connection
+#endif
   //configure the SOCs for boostxldrv8305_revB on J5 Connection
   // EXT IA-FB
   ADC_setSocChanNumber(obj->adcHandle,ADC_SocNumber_0,ADC_SocChanNumber_A3);
@@ -901,8 +942,10 @@ void HAL_setupAdcs(HAL_Handle handle)
   ADC_setSocTrigSrc(obj->adcHandle,ADC_SocNumber_7,ADC_SocTrigSrc_EPWM4_ADCSOCA);
   ADC_setSocSampleDelay(obj->adcHandle,ADC_SocNumber_7,ADC_SocSampleDelay_9_cycles);
 #else
+#if HAL_USER_DEBUG
 #warning: J1 connector.
-  //configure the SOCs for boostxldrv8305_revB on J1 Connection
+#endif
+	//configure the SOCs for boostxldrv8305_revB on J1 Connection
   // EXT IA-FB
   ADC_setSocChanNumber(obj->adcHandle,ADC_SocNumber_0,ADC_SocChanNumber_A0);
   ADC_setSocTrigSrc(obj->adcHandle,ADC_SocNumber_0,ADC_SocTrigSrc_EPWM1_ADCSOCA);
@@ -1600,27 +1643,42 @@ void HAL_setupPwmDacs(HAL_Handle handle)
   return;
 }  // end of HAL_setupPwmDacs() function
 
+#if NO_RTOS || EnableTimers
 void HAL_setupTimers(HAL_Handle handle,const float_t systemFreq_MHz)
 {
   HAL_Obj  *obj = (HAL_Obj *)handle;
   uint32_t  timerPeriod_cnts = (uint32_t)(systemFreq_MHz * (float_t)1000000.0) - 1;
 
   // use timer 0 for frequency diagnostics
-#if NO_RTOS
-#error
+#if NO_RTOS || EnableTimers
+#if HAL_USER_DEBUG
+  #warning: setting up timers.
+#endif
+#if EnableTimer_0
   TIMER_setDecimationFactor(obj->timerHandle[0],0);
   TIMER_setEmulationMode(obj->timerHandle[0],TIMER_EmulationMode_RunFree);
   TIMER_setPeriod(obj->timerHandle[0],timerPeriod_cnts);
   TIMER_setPreScaler(obj->timerHandle[0],0);
 #endif
+
+#if EnableTimer_1
   // use timer 1 for CPU usage diagnostics
   TIMER_setDecimationFactor(obj->timerHandle[1],0);
   TIMER_setEmulationMode(obj->timerHandle[1],TIMER_EmulationMode_RunFree);
   TIMER_setPeriod(obj->timerHandle[1],timerPeriod_cnts);
   TIMER_setPreScaler(obj->timerHandle[1],0);
- 
-}  // end of HAL_setupTimers() function
+#endif
+#if EnableTimer_2
+  // use timer 1 for CPU usage diagnostics
+  TIMER_setDecimationFactor(obj->timerHandle[2],0);
+  TIMER_setEmulationMode(obj->timerHandle[2],TIMER_EmulationMode_RunFree);
+  TIMER_setPeriod(obj->timerHandle[2],timerPeriod_cnts);
+  TIMER_setPreScaler(obj->timerHandle[2],0);
+#endif
 
+#endif
+}  // end of HAL_setupTimers() function
+#endif
 
 void HAL_writeDrvData(HAL_Handle handle, DRV_SPI_8305_Vars_t *Spi_8305_Vars)
 {

@@ -57,6 +57,7 @@
 									<listOptionValue builtIn="false" value="225"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.ADVICE__PERFORMANCE.1557135190" name="Provide advice on optimization techniques (--advice:performance)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.ADVICE__PERFORMANCE" value="" valueType="string"/>
+								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.OPT_LEVEL.1802116955" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.OPT_LEVEL" value="com.ti.ccstudio.buildDefinitions.C2000_6.4.compilerID.OPT_LEVEL.4" valueType="enumerated"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__C_SRCS.1479724997" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__C_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__CPP_SRCS.1916944838" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__CPP_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__ASM_SRCS.1947556645" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.4.compiler.inputType__ASM_SRCS"/>
@@ -105,7 +106,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src|drivers/pie.c|28069_RAM_lnk.cmd|f28069F_ram_lnk.cmd|F2806x_Headers_BIOS.cmd|js|info|hooks|EWare_F28069_BIOS|EWare_F28069_BIOS/F2806x_usDelay.asm|EWare_F28069_BIOS/F2806x_GlobalVariableDefs.c|EWare_F28069_BIOS/F2806x_SysCtrl.c|EWare_F28069_BIOS/F2806x_CpuTimers.c|EWare_F28069_BIOS/F2806x_CodeStartBranch.asm" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="drivers_user_8305|src|drivers/pie.c|28069_RAM_lnk.cmd|f28069F_ram_lnk.cmd|F2806x_Headers_BIOS.cmd|js|info|hooks|EWare_F28069_BIOS|EWare_F28069_BIOS/F2806x_usDelay.asm|EWare_F28069_BIOS/F2806x_GlobalVariableDefs.c|EWare_F28069_BIOS/F2806x_SysCtrl.c|EWare_F28069_BIOS/F2806x_CpuTimers.c|EWare_F28069_BIOS/F2806x_CodeStartBranch.asm" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -202,7 +203,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src|28069_RAM_lnk.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="drivers_user_8305|src|28069_RAM_lnk.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
